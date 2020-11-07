@@ -13,17 +13,12 @@
         <v-col class="ml-4 mr-4">
             <v-data-table :height="700" :dense="true" :headers="profileHeader" :items="profiles" item-key="profid" :items-per-page="20" class="elevation-4" v-model="selected" :single-select="true">
                 <template slot="item" slot-scope="props">
-                    <tr @click="showAlert(props.item)">
+                    <tr @click="showDialog(props.item)">
                         <td>{{ props.item.profid }}</td>
                         <td>{{ props.item.accountname }}</td>
                         <td>{{ props.item.address }}</td>
                         <td>{{ props.item.gender.genderdescrip }}</td>
                         <td>{{ props.item.proftype.proftypedescrip }}</td>
-                        <td>
-                            <v-btn slot="activator" small fab color="info" @click="dialog=true">
-                                <v-icon>edit</v-icon>
-                            </v-btn>
-                        </td>
                     </tr>
                 </template>
             </v-data-table>
@@ -34,27 +29,23 @@
 
             <v-card>
                 <v-card-title>
-                    <h5>{{ selected.profid }} - {{ selected.accountname }}</h5>
+                    <h5><small>Profile ID:</small> {{ selected.profid }}</h5>
                     <br>
                 </v-card-title>
                 <v-card-text>
                     <v-container grid-list-md>
                         <v-layout wrap>
 
-                            <v-flex>
-                                <v-text-field label="Account Name*" required></v-text-field>
+                            <v-flex xs12>
+                                <v-text-field label="Account Name*" required v-model="selected.accountname"></v-text-field>
                             </v-flex>
 
-                            <v-flex>
-                                <v-text-field label="Legal middle name" hint="example of helper text only on focus"></v-text-field>
+                            <v-flex xs12>
+                                <v-text-field label="Address" hint="Full Address" v-model="selected.address"></v-text-field>
                             </v-flex>
 
-                            <v-flex>
-                                <v-text-field label="Legal last name*" hint="example of persistent helper text" persistent-hint required></v-text-field>
-                            </v-flex>
-
-                            <v-flex xs12 sm6>
-                                <v-autocomplete :items="selected.genders" label="Gender" multiple></v-autocomplete>
+                            <v-flex xs6>
+                                <v-select :items="genders" v-model="selected.gender" item-value="genderid" item-text="genderdescrip"></v-select>
                             </v-flex>
 
                         </v-layout>
@@ -87,44 +78,66 @@ export default {
     computed: {
         console: () => console,
         window: () => window,
+
     },
     watch: {
-        dialog(val) {
-            if (val) {
-                document.addEventListener('mousedown', this.mousedownHandler)
-            } else {
-                document.removeEventListener('mousedown', this.mousedownHandler)
-            }
-        }
+
     },
     methods: {
         clickedRow: (item, row) => {
             row.select(true);
             console.log(item);
         },
-        doubleClicked: (row) => {
-            console.log(row);
+        doubleClicked: () => {
+            this.dialog = true;
         },
-        showAlert(a) {
-            console.log(this.selected);
+        showDialog(a) {
 
             this.selected.profid = a.profid;
             this.selected.accountname = a.accountname;
+            this.selected.address = a.address;
             this.selected.gender = a.gender;
             this.selected.proftype = a.proftype;
-            this.selected.genders = [];
 
-            //to convert object to array
-            for (let gen in a.gender) {
-                this.selected.genders.push(gen);
-            }
-        }
+            this.dialog = true;
+
+        },
+
     },
     mounted() {
         this.loading = true;
+
         axios
             .get("http://localhost:8000/api/profiles")
-            .then((response) => (this.profiles = response.data));
+            .then((response) => (this.profiles = response.data))
+            .catch(function (error) {
+                console.log(error);
+            })
+            .then(function () {
+                console.log('done loading profiles');
+            });
+        axios
+            .get("http://localhost:8000/api/genders")
+            .then((response) => {
+                this.genders = response.data;
+                //console.log(this.genders)
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+            .then(function () {
+                console.log('done loading genders');
+            });
+        axios
+            .get("http://localhost:8000/api/proftypes")
+            .then((response) => (this.proftypes = response.data))
+            .catch(function (error) {
+                console.log(error);
+            })
+            .then(function () {
+                console.log('done loading proftypes');
+            });
+
         this.loading = false;
     },
     data() {
@@ -132,7 +145,10 @@ export default {
             name: "",
             loading: true,
             dialog: false,
+            gendersArray: [],
             profiles: [],
+            genders: [],
+            proftypes: [],
             selected: [],
             profileHeader: [{
                     text: "Profile ID",
