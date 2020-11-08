@@ -1,6 +1,7 @@
 <template>
 <v-app style="-webkit-app-region: drag">
-    <Navbar />
+    <TopNav />
+   
 
     <v-main>
         <router-view>
@@ -10,13 +11,15 @@
 </template>
 
 <script>
-import Navbar from '@/components/Navbar.vue';
+import TopNav from '@/components/TopNav.vue';
+//import Navbar from '@/components/Navbar.vue';
 
 export default {
     name: 'App',
 
     components: {
-        Navbar,
+        //Navbar,
+        TopNav,
     },
 
     props: {
