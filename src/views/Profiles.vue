@@ -19,6 +19,7 @@
                         <td>{{ props.item.address }}</td>
                         <td>{{ props.item.gender.genderdescrip }}</td>
                         <td>{{ props.item.proftype.proftypedescrip }}</td>
+                        <td>{{ props.item.remarks }}</td>
                     </tr>
                 </template>
             </v-data-table>
@@ -98,6 +99,7 @@ export default {
             this.selected.address = a.address;
             this.selected.gender = a.gender;
             this.selected.proftype = a.proftype;
+            this.selected.remarks = a.remarks;
 
             this.dialog = true;
 
@@ -180,6 +182,12 @@ export default {
                     sortable: true,
                     value: "proftype.proftypedescrip",
                 },
+                {
+                    text: "Notes",
+                    align: "start",
+                    sortable: true,
+                    value: "remarks",
+                },
             ],
 
         };
@@ -188,7 +196,8 @@ export default {
 </script>
 
 <style>
+
 .v-data-table>.v-data-table__wrapper>table>tbody>tr>td {
-    font-size: 10px;
+   font-size: 11px !important;
 }
 </style>

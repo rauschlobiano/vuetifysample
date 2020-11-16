@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar src="https://picsum.photos/1920/1080?random" dark>
+    <v-app-bar src="https://picsum.photos/1920/1080?random" dark fixed>
     <template v-slot:img="{ props }">
         <v-img
           v-bind="props"
@@ -24,12 +24,20 @@
 
     <v-spacer></v-spacer>
     </v-app-bar>
+    <v-progress-linear
+        :active="loading"
+        :indeterminate="loading"
+        absolute
+        bottom
+        color="deep-purple accent-4"
+      ></v-progress-linear>
   </div>
 </template>
 <script>
 export default {
     data() {
         return {
+            loading: true,
             links: [],
         }
     },
